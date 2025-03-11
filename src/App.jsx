@@ -1,30 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React, { Suspense, useState } from 'react'
 import './App.css'
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Loader from './components/common/Loader';
+
+const Layout = React.lazy(() => import('./layouts/Layout'));
+const Login = React.lazy(() => import('./pages/Login'));
+const Signup = React.lazy(() => import('./pages/SignUp'));
+const Home = React.lazy(() => import('./pages/Home'));
+const PageNotFound = React.lazy(() => import('./pages/PageNotFound'));
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path='sign-in' element={
+            <Suspense
+              fallback={<Loader />}>
+              <Login />
+            </Suspense>
+          }
+          />
+          <Route path='sign-up' element={
+            <Suspense
+              fallback={<Loader />}>
+              <Signup />
+            </Suspense>
+          }
+          />
+          <Route path="/" element={
+            <Suspense fallback={<Loader />}>
+              <Layout />
+            </Suspense>
+          }
+          >
+            <Route index element={
+              <Suspense
+                fallback={<Loader />}>
+                <Home />
+              </Suspense>
+            }
+            />
+            <Route path='*' element={
+              <Suspense fallback={<Loader />}>
+                <PageNotFound />
+              </Suspense>
+            }
+            />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
